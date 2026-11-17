@@ -3,18 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Waiver Wire</title>
+<title>AI Waiver Wire Decider</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="top">
   <div class="wrap top-row">
-    <div>
+    <div class="brand">
       <p class="eyebrow" id="league-line"></p>
-      <h1>Waiver Wire</h1>
+      <h1>AI Waiver Wire Decider</h1>
     </div>
     <nav class="tabs" role="tablist" aria-label="Sections">
-      <button role="tab" data-tab="players" aria-selected="true">Available players</button>
+      <button role="tab" data-tab="players" aria-selected="true">Players</button>
       <button role="tab" data-tab="league" aria-selected="false">League moves</button>
       <button role="tab" data-tab="model" aria-selected="false">Model</button>
       <button role="tab" data-tab="data" aria-selected="false">Export data</button>
@@ -24,20 +27,41 @@
 
 <main class="wrap">
   <section id="tab-players" class="tab">
-    <div id="summary" class="tiles"></div>
-    <div class="controls">
-      <div id="pos-chips" class="chips" role="group" aria-label="Position"></div>
-      <input id="search" type="search" placeholder="Search player or team" aria-label="Search player or team">
-      <label class="check"><input type="checkbox" id="only-proj" checked> Has a projection this week</label>
-      <label class="check"><input type="checkbox" id="hide-injured"> Hide injured</label>
+    <div class="split">
+      <div class="main-col">
+        <div class="controls">
+          <div id="pos-chips" class="chips" role="group" aria-label="Position"></div>
+          <input id="search" type="search" placeholder="Search player or team" aria-label="Search player or team">
+        </div>
+        <div class="controls minor">
+          <label class="check"><input type="checkbox" id="only-proj" checked> Has a projection this week</label>
+          <label class="check"><input type="checkbox" id="hide-injured"> Hide injured</label>
+          <span id="board-count" class="muted"></span>
+        </div>
+        <div class="table-scroll">
+          <table id="board" class="grid">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p id="board-foot" class="foot"></p>
+      </div>
+
+      <aside class="ask" aria-label="Ask about a waiver add">
+        <div class="ask-head">
+          <h2>Ask the decider</h2>
+          <label class="team-pick">My team
+            <select id="my-team" aria-label="My team"></select>
+          </label>
+        </div>
+        <div id="chat" class="chat" aria-live="polite"></div>
+        <div id="suggest" class="suggest"></div>
+        <form id="ask-form" class="ask-form">
+          <input id="ask-input" type="text" autocomplete="off" placeholder="Who should I pick up at tight end?" aria-label="Your question">
+          <button type="submit">Ask</button>
+        </form>
+      </aside>
     </div>
-    <div class="table-scroll">
-      <table id="board" class="grid">
-        <thead></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <p id="board-foot" class="foot"></p>
   </section>
 
   <section id="tab-league" class="tab" hidden></section>

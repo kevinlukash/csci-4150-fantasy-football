@@ -185,6 +185,35 @@ def build_players(folder, week):
     return players
 
 
+# ---------------------------------------------------------------- rosters
+
+
+def build_rosters(folder, week):
+    """Each league team's players, plus every NFL team's upcoming opponents."""
+    by_team = defaultdict(list)
+    schedule = {}
+    for row in read(folder, "roster.csv"):
+        stats = loads(row["stats"], {})
+        injury = row["injuryStatus"]
+        by_team[row["team_id"]].append(
+            {
+                "id": row["playerId"],
+                "name": clean_name(row["name"]),
+                "pos": row["position"],
+                "team": row["proTeam"],
+                "slot": row["lineupSlot"],
+                "injury": None if injury in ("", "[]") else injury,
+                "avg": num(row["avg_points"]),
+                "weekProj": num(stats.get(str(week), {}).get("projected_points")),
+            }
+        )
+        if row["proTeam"] not in schedule:
+            games = loads(row["schedule"], {})
+            if games:
+                schedule[row["proTeam"]] = {int(w): g.get("team") for w, g in games.items()}
+    return by_team, schedule
+
+
 # ---------------------------------------------------------------- league
 
 
@@ -468,6 +497,13 @@ def main():
     folder = pick_folder()
     league = build_league(folder)
     players = build_players(folder, league["week"])
+    rosters, schedule = build_rosters(folder, league["week"])
+    for team in league["teams"]:
+        team["roster"] = rosters.get(team["id"], [])
+    for p in players:
+        games = schedule.get(p["team"])
+        # [week, opponent]; opponent is None on a bye. Empty when the schedule is unknown.
+        p["next"] = [[w, games.get(w)] for w in range(league["week"], league["week"] + 4)] if games else []
     moves, claims = build_activity(folder, {p["id"] for p in players})
     models = build_models(folder, players, league["week"])
 
