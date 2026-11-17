@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waiver Wire</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-row">
+    <div>
+      <p class="eyebrow" id="league-line"></p>
+      <h1>Waiver Wire</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" data-tab="players" aria-selected="true">Available players</button>
+      <button role="tab" data-tab="league" aria-selected="false">League moves</button>
+      <button role="tab" data-tab="model" aria-selected="false">Model</button>
+      <button role="tab" data-tab="data" aria-selected="false">Export data</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="tab-players" class="tab">
+    <div id="summary" class="tiles"></div>
+    <div class="controls">
+      <div id="pos-chips" class="chips" role="group" aria-label="Position"></div>
+      <input id="search" type="search" placeholder="Search player or team" aria-label="Search player or team">
+      <label class="check"><input type="checkbox" id="only-proj" checked> Has a projection this week</label>
+      <label class="check"><input type="checkbox" id="hide-injured"> Hide injured</label>
+    </div>
+    <div class="table-scroll">
+      <table id="board" class="grid">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p id="board-foot" class="foot"></p>
+  </section>
+
+  <section id="tab-league" class="tab" hidden></section>
+  <section id="tab-model" class="tab" hidden></section>
+  <section id="tab-data" class="tab" hidden></section>
+</main>
+
+<aside id="drawer" class="drawer" hidden aria-label="Player detail">
+  <button id="drawer-close" class="close" aria-label="Close player detail">Close</button>
+  <div id="drawer-body"></div>
+</aside>
+<div id="scrim" class="scrim" hidden></div>
+
+<p id="missing" class="wrap missing" hidden>
+  No data yet. From the repo root run
+  <code>uv run --no-project --with scikit-learn python frontend/build_data.py</code>
+  and reload this page.
+</p>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
