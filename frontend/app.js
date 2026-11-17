@@ -248,8 +248,14 @@
     return hits.filter(function (e) { if (seen[e.p.id]) return false; seen[e.p.id] = 1; return true; }).slice(0, 2);
   }
 
+  // Drop what the manager says they do NOT want ("I don't need a running back,
+  // show me tight ends") so the position that is left is the one being asked for.
+  function withoutNegated(text) {
+    return text.toLowerCase().replace(/\b(?:don'?t|do not|not|no|without)\b[^,.;!?]*?(?=,|\.|;|!|\?|\bbut\b|\bshow\b|\bgive\b|$)/g, " ");
+  }
+
   function posFrom(text) {
-    var t = text.toLowerCase();
+    var t = withoutNegated(text);
     if (/\bqbs?\b|quarterback/.test(t)) return "QB";
     if (/\brbs?\b|running ?back/.test(t)) return "RB";
     if (/\bwrs?\b|receiver|wideout/.test(t)) return "WR";
@@ -437,7 +443,8 @@
     if (/trend|rising|hot\b|popular|everyone/.test(t)) return trending();
     if (pos) return topAt(pos);
     if (/\bdrop|\bcut\b|swap out|worst/.test(t)) return dropAdvice();
-    if (/add|pick ?up|waiver|claim|upgrade|need|best|help|who|team|improve/.test(t)) return upgrades();
+    // Only a waiver question gets picks; anything else gets the help text, not a guess.
+    if (/\badd|pick ?ups?\b|waiver|\bclaim|upgrade|\bswap|replace|improve my|my (team|roster|lineup)/.test(t)) return upgrades();
     return "<p>I can answer from this week's export. Try a position (“best tight end”), a player (“should I add " +
       esc((pool("WR")[0] || D.players[0]).name) + "?”), two players to compare, “who should I drop?”, or “who's trending?”.</p>";
   }
