@@ -470,7 +470,7 @@
   function renderAsk() {
     var saved = "";
     try { saved = localStorage.getItem(TEAM_KEY) || ""; } catch (e) { saved = ""; }
-    var teams = D.league.teams.slice().sort(function (a, b) { return a.name.localeCompare(b.name); });
+    var teams = D.league.teams.slice().sort(function (a, b) { return a.name.localeCompare(b.name, undefined, { numeric: true }); });
     $("my-team").innerHTML = '<option value="">Not set</option>' + teams.map(function (t) {
       return '<option value="' + esc(t.id) + '"' + (t.id === saved ? " selected" : "") + ">" + esc(t.name) + "</option>";
     }).join("");

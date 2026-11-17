@@ -4,6 +4,10 @@ Run from the repo root:
 
     uv run --with scikit-learn frontend/build_data.py            # newest export with waiver.csv
     uv run --with scikit-learn frontend/build_data.py exports/league_..._...
+    uv run --with scikit-learn frontend/build_data.py --real-names
+
+League team names are shown as "Team 1", "Team 2", ... (numbered by ESPN team
+id) so the page is fine to present. Pass --real-names to keep the league's own.
 
 Without scikit-learn the page still gets every table; only the model numbers
 (predictions and scores) are left out.
@@ -36,6 +40,15 @@ FEATURES = [
     "projected_breakdown_receivingTouchdowns",
 ]
 WEEKS_USED = 3  # week_predict in the multi-week notebook
+REAL_NAMES = "--real-names" in sys.argv
+ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
+
+
+def team_label(team_id, real_name):
+    """The name the page shows for a league team."""
+    if REAL_NAMES or team_id in (None, ""):
+        return real_name
+    return f"Team {team_id}"
 
 
 def read(folder: Path, name: str) -> list[dict]:
@@ -81,8 +94,8 @@ def clean_name(name: str) -> str:
 
 
 def pick_folder() -> Path:
-    if len(sys.argv) > 1:
-        return Path(sys.argv[1]).resolve()
+    if ARGS:
+        return Path(ARGS[0]).resolve()
     found = sorted(p.parent for p in (ROOT / "exports").glob("*/waiver.csv"))
     if not found:
         sys.exit("No export with a waiver.csv under exports/. Run export_football.py first.")
@@ -110,7 +123,7 @@ def build_players(folder, week):
                 "pts": num(row["points"]),
                 "proj": num(row["projected_points"]),
                 "opp": row.get("pro_opponent") or None,
-                "team": row.get("team_name") or None,
+                "team": team_label(row.get("team_id"), row.get("team_name")) or None,
                 "slot": row.get("slot_position") or None,
             }
         )
@@ -231,7 +244,7 @@ def build_league(folder):
     teams = [
         {
             "id": t["team_id"],
-            "name": t["team_name"],
+            "name": team_label(t["team_id"], t["team_name"]),
             "wins": int(t["wins"] or 0),
             "losses": int(t["losses"] or 0),
             "standing": int(t["standing"] or 0),
@@ -269,7 +282,7 @@ def build_activity(folder, available_ids):
             moves.append(
                 {
                     "date": int(row["date"]) if row["date"].isdigit() else None,
-                    "team": team.get("team_name") if isinstance(team, dict) else str(team),
+                    "team": team_label(team.get("team_id"), team.get("team_name")) if isinstance(team, dict) else str(team),
                     "action": kind,
                     "player": player.get("name"),
                     "id": pid,
