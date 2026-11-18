@@ -1,2 +1,3 @@
-﻿record_type,league_id,season,week,current_week,final_scoring_period,first_scoring_period,previous_seasons
-league,2052609889,2026,,6,16,1,[]
+version https://git-lfs.github.com/spec/v1
+oid sha256:7d502f0a2c2b1ace39b25527ebe1cfb26dbad3df00f4fa97dd7e78e7eca7de75
+size 145
